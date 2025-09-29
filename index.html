@@ -1,0 +1,1760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Órdenes de Trabajo</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .github-section {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        .github-section h2 {
+            color: var(--dark-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+        
+        .sidebar {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+        
+        .nav-menu {
+            list-style: none;
+        }
+        
+        .nav-item {
+            margin-bottom: 10px;
+        }
+        
+        .nav-link {
+            display: block;
+            padding: 12px 15px;
+            color: var(--dark-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .content {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            min-height: 600px;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #219653;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+        }
+        
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+        }
+        
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+        
+        .btn-info {
+            background-color: #3498db;
+        }
+        
+        .btn-info:hover {
+            background-color: #2980b9;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            text-align: center;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .card h3 {
+            margin-bottom: 10px;
+            color: var(--dark-color);
+            font-size: 1rem;
+        }
+        
+        .card .amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .card.orders .amount {
+            color: var(--primary-color);
+        }
+        
+        .card.pending .amount {
+            color: var(--warning-color);
+        }
+        
+        .card.completed .amount {
+            color: var(--success-color);
+        }
+        
+        .card.clients .amount {
+            color: #9b59b6;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+        }
+        
+        .section h2 {
+            color: var(--dark-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-color);
+        }
+        
+        .item-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .order-item, .client-item, .product-item {
+            border: 1px solid #eee;
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+        }
+        
+        .order-header, .client-header, .product-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-in-progress {
+            background-color: #cce7ff;
+            color: #004085;
+        }
+        
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        
+        .status-cancelled {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .action-btn {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .edit-btn {
+            background-color: var(--warning-color);
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .complete-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+        
+        .status-message {
+            padding: 12px;
+            border-radius: 4px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .token-info {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .repo-details {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+            color: #bdc3c7;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .search-bar {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        
+        .search-bar input {
+            flex: 1;
+            margin-right: 10px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .content {
+                order: 1;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛠️ Sistema de Órdenes de Trabajo</h1>
+            <p class="subtitle">Gestión completa de clientes, productos y órdenes de trabajo</p>
+        </header>
+
+        <section class="github-section">
+            <h2>🔗 Conexión con GitHub</h2>
+            
+            <div class="form-group">
+                <label for="github-token">Token de acceso personal de GitHub:</label>
+                <input type="password" id="github-token" placeholder="ghp_tuTokenDeGitHub">
+                <div class="token-info">
+                    <a href="https://github.com/settings/tokens" target="_blank">Crear token aquí (necesitas permisos "repo")</a>
+                </div>
+            </div>
+            
+            <div class="repo-details" id="repo-details">
+                <h3>✅ Configuración Detectada</h3>
+                <p><strong>Repositorio:</strong> AppServerMV/Appahorrabientuslucas</p>
+                <p><strong>Archivo:</strong> data.json</p>
+                <p><strong>Estado:</strong> <span id="connection-status">Desconectado</span></p>
+                
+                <div class="form-actions">
+                    <button class="btn btn-info" id="test-connection">Probar Conexión</button>
+                    <button class="btn" id="load-from-github">Cargar desde GitHub</button>
+                    <button class="btn btn-success" id="save-to-github">Guardar en GitHub</button>
+                </div>
+            </div>
+        </section>
+
+        <div id="status-message" class="status-message"></div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <ul class="nav-menu">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-tab="dashboard">
+                            <i>📊</i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="orders">
+                            <i>📋</i> Órdenes de Trabajo
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="clients">
+                            <i>👥</i> Gestión de Clientes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="products">
+                            <i>📦</i> Gestión de Productos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="reports">
+                            <i>📈</i> Reportes Financieros
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-tab="settings">
+                            <i>⚙️</i> Configuración
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="content">
+                <!-- Dashboard -->
+                <div class="tab-content active" id="dashboard-tab">
+                    <h2>📊 Dashboard de Órdenes</h2>
+                    
+                    <div class="dashboard">
+                        <div class="card orders">
+                            <h3>Total de Órdenes</h3>
+                            <div class="amount" id="total-orders">0</div>
+                            <p>Órdenes registradas en el sistema</p>
+                        </div>
+                        
+                        <div class="card pending">
+                            <h3>Órdenes Pendientes</h3>
+                            <div class="amount" id="pending-orders">0</div>
+                            <p>Órdenes en estado pendiente</p>
+                        </div>
+                        
+                        <div class="card completed">
+                            <h3>Órdenes Completadas</h3>
+                            <div class="amount" id="completed-orders">0</div>
+                            <p>Órdenes finalizadas</p>
+                        </div>
+                        
+                        <div class="card clients">
+                            <h3>Clientes Registrados</h3>
+                            <div class="amount" id="total-clients">0</div>
+                            <p>Clientes en la base de datos</p>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Órdenes Recientes</h2>
+                        <div id="recent-orders">
+                            <div class="empty-state">
+                                <i>📋</i>
+                                <p>No hay órdenes recientes</p>
+                                <p>Las órdenes recientes aparecerán aquí</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Órdenes de Trabajo -->
+                <div class="tab-content" id="orders-tab">
+                    <h2>📋 Gestión de Órdenes de Trabajo</h2>
+                    
+                    <div class="form-actions">
+                        <button class="btn" id="new-order-btn">Nueva Orden</button>
+                        <button class="btn btn-info" id="refresh-orders">Actualizar Lista</button>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="order-search" placeholder="Buscar órdenes...">
+                        <button class="btn" id="search-order-btn">Buscar</button>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Todas las Órdenes</h2>
+                        <div id="orders-list">
+                            <div class="empty-state">
+                                <i>📋</i>
+                                <p>No hay órdenes de trabajo registradas</p>
+                                <p>Carga los datos desde GitHub o crea una nueva orden</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gestión de Clientes -->
+                <div class="tab-content" id="clients-tab">
+                    <h2>👥 Gestión de Clientes</h2>
+                    
+                    <div class="form-actions">
+                        <button class="btn" id="new-client-btn">Nuevo Cliente</button>
+                        <button class="btn btn-info" id="refresh-clients">Actualizar Lista</button>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="client-search" placeholder="Buscar clientes...">
+                        <button class="btn" id="search-client-btn">Buscar</button>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Lista de Clientes</h2>
+                        <div id="clients-list">
+                            <div class="empty-state">
+                                <i>👥</i>
+                                <p>No hay clientes registrados</p>
+                                <p>Carga los datos desde GitHub o agrega un nuevo cliente</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gestión de Productos -->
+                <div class="tab-content" id="products-tab">
+                    <h2>📦 Gestión de Productos</h2>
+                    
+                    <div class="form-actions">
+                        <button class="btn" id="new-product-btn">Nuevo Producto</button>
+                        <button class="btn btn-info" id="refresh-products">Actualizar Lista</button>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="product-search" placeholder="Buscar productos...">
+                        <button class="btn" id="search-product-btn">Buscar</button>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Lista de Productos</h2>
+                        <div id="products-list">
+                            <div class="empty-state">
+                                <i>📦</i>
+                                <p>No hay productos registrados</p>
+                                <p>Carga los datos desde GitHub o agrega un nuevo producto</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Reportes Financieros -->
+                <div class="tab-content" id="reports-tab">
+                    <h2>📈 Reportes Financieros</h2>
+                    
+                    <div class="dashboard">
+                        <div class="card">
+                            <h3>Ingresos Totales</h3>
+                            <div class="amount" id="total-income">$0</div>
+                            <p>Total de ingresos por órdenes</p>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>Órdenes Este Mes</h3>
+                            <div class="amount" id="month-orders">0</div>
+                            <p>Órdenes creadas este mes</p>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>Clientes Nuevos</h3>
+                            <div class="amount" id="new-clients">0</div>
+                            <p>Clientes registrados este mes</p>
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Órdenes por Estado</h2>
+                        <canvas id="orders-chart" width="400" height="200"></canvas>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>Ingresos Mensuales</h2>
+                        <canvas id="income-chart" width="400" height="200"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Configuración -->
+                <div class="tab-content" id="settings-tab">
+                    <h2>⚙️ Configuración del Sistema</h2>
+                    
+                    <div class="section">
+                        <h3>Configuración General</h3>
+                        <form id="settings-form">
+                            <div class="form-group">
+                                <label for="company-name">Nombre de la Empresa:</label>
+                                <input type="text" id="company-name" placeholder="Ingresa el nombre de tu empresa">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="company-address">Dirección:</label>
+                                <textarea id="company-address" placeholder="Dirección de la empresa"></textarea>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="company-phone">Teléfono:</label>
+                                    <input type="text" id="company-phone" placeholder="Teléfono de contacto">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="company-email">Email:</label>
+                                    <input type="email" id="company-email" placeholder="Email de contacto">
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="default-tax">Impuesto Predeterminado (%):</label>
+                                <input type="number" id="default-tax" min="0" max="100" step="0.1" value="19">
+                            </div>
+                            
+                            <button type="submit" class="btn">Guardar Configuración</button>
+                        </form>
+                    </div>
+                    
+                    <div class="section">
+                        <h3>Respaldo de Datos</h3>
+                        <p>Realiza respaldo de toda la información del sistema</p>
+                        <div class="form-actions">
+                            <button class="btn btn-info" id="backup-data">Crear Respaldo</button>
+                            <button class="btn btn-warning" id="restore-data">Restaurar desde Respaldo</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Nueva Orden -->
+    <div id="order-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto;">
+            <h2>Nueva Orden de Trabajo</h2>
+            <form id="order-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="order-client">Cliente:</label>
+                        <select id="order-client" required>
+                            <option value="">Selecciona un cliente</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="order-priority">Prioridad:</label>
+                        <select id="order-priority" required>
+                            <option value="baja">Baja</option>
+                            <option value="media">Media</option>
+                            <option value="alta">Alta</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="order-description">Descripción del Trabajo:</label>
+                    <textarea id="order-description" required placeholder="Describe detalladamente el trabajo a realizar"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="order-products">Productos/Servicios:</label>
+                    <select id="order-products" multiple style="height: 120px;">
+                        <option value="">Selecciona productos/servicios</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="order-estimate">Presupuesto Estimado:</label>
+                        <input type="number" id="order-estimate" placeholder="Presupuesto estimado">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="order-deadline">Fecha Límite:</label>
+                        <input type="date" id="order-deadline">
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn">Crear Orden</button>
+                    <button type="button" class="btn btn-danger" id="cancel-order">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Nuevo Cliente -->
+    <div id="client-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <h2>Nuevo Cliente</h2>
+            <form id="client-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="client-name">Nombre:</label>
+                        <input type="text" id="client-name" required placeholder="Nombre del cliente">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="client-lastname">Apellido:</label>
+                        <input type="text" id="client-lastname" required placeholder="Apellido del cliente">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-email">Email:</label>
+                    <input type="email" id="client-email" placeholder="Email del cliente">
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-phone">Teléfono:</label>
+                    <input type="text" id="client-phone" placeholder="Teléfono del cliente">
+                </div>
+                
+                <div class="form-group">
+                    <label for="client-address">Dirección:</label>
+                    <textarea id="client-address" placeholder="Dirección del cliente"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn">Crear Cliente</button>
+                    <button type="button" class="btn btn-danger" id="cancel-client">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal para Nuevo Producto -->
+    <div id="product-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;">
+            <h2>Nuevo Producto/Servicio</h2>
+            <form id="product-form">
+                <div class="form-group">
+                    <label for="product-name">Nombre:</label>
+                    <input type="text" id="product-name" required placeholder="Nombre del producto/servicio">
+                </div>
+                
+                <div class="form-group">
+                    <label for="product-description">Descripción:</label>
+                    <textarea id="product-description" placeholder="Descripción del producto/servicio"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="product-price">Precio:</label>
+                        <input type="number" id="product-price" required placeholder="Precio del producto">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="product-category">Categoría:</label>
+                        <select id="product-category" required>
+                            <option value="">Selecciona categoría</option>
+                            <option value="producto">Producto</option>
+                            <option value="servicio">Servicio</option>
+                            <option value="repuesto">Repuesto</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn">Crear Producto</button>
+                    <button type="button" class="btn btn-danger" id="cancel-product">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let appData = {
+            metadata: {
+                ultima_actualizacion: new Date().toISOString(),
+                version_esquema: "1.0"
+            },
+            configuracion: {
+                empresa: {
+                    nombre: "Mi Empresa",
+                    direccion: "",
+                    telefono: "",
+                    email: "",
+                    impuesto: 19
+                }
+            },
+            clientes: [],
+            productos: [],
+            ordenes: []
+        };
+
+        let currentFileSha = '';
+        let githubToken = '';
+        const CONFIG = {
+            owner: 'AppServerMV',
+            repo: 'Appahorrabientuslucas',
+            filePath: 'data.json'
+        };
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar navegación
+            setupNavigation();
+            
+            // Configurar eventos de GitHub
+            document.getElementById('test-connection').addEventListener('click', testConnection);
+            document.getElementById('load-from-github').addEventListener('click', loadFromGitHub);
+            document.getElementById('save-to-github').addEventListener('click', saveToGitHub);
+            
+            // Configurar eventos de órdenes
+            document.getElementById('new-order-btn').addEventListener('click', showOrderModal);
+            document.getElementById('refresh-orders').addEventListener('click', refreshOrders);
+            document.getElementById('search-order-btn').addEventListener('click', searchOrders);
+            
+            // Configurar eventos de clientes
+            document.getElementById('new-client-btn').addEventListener('click', showClientModal);
+            document.getElementById('refresh-clients').addEventListener('click', refreshClients);
+            document.getElementById('search-client-btn').addEventListener('click', searchClients);
+            
+            // Configurar eventos de productos
+            document.getElementById('new-product-btn').addEventListener('click', showProductModal);
+            document.getElementById('refresh-products').addEventListener('click', refreshProducts);
+            document.getElementById('search-product-btn').addEventListener('click', searchProducts);
+            
+            // Configurar eventos de modales
+            document.getElementById('cancel-order').addEventListener('click', hideOrderModal);
+            document.getElementById('cancel-client').addEventListener('click', hideClientModal);
+            document.getElementById('cancel-product').addEventListener('click', hideProductModal);
+            
+            // Configurar formularios
+            document.getElementById('order-form').addEventListener('submit', createOrder);
+            document.getElementById('client-form').addEventListener('submit', createClient);
+            document.getElementById('product-form').addEventListener('submit', createProduct);
+            document.getElementById('settings-form').addEventListener('submit', saveSettings);
+            
+            // Mostrar detalles del repositorio
+            document.getElementById('repo-details').style.display = 'block';
+            
+            // Cargar configuración guardada
+            loadSavedConfig();
+            
+            // Actualizar la interfaz con datos vacíos
+            updateUI();
+        });
+
+        // Configurar navegación
+        function setupNavigation() {
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remover clase active de todos los enlaces
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    
+                    // Agregar clase active al enlace clickeado
+                    this.classList.add('active');
+                    
+                    // Ocultar todos los contenidos
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Mostrar el contenido correspondiente
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    
+                    // Actualizar la interfaz específica de la pestaña
+                    if (tabId === 'dashboard') {
+                        updateDashboard();
+                    } else if (tabId === 'orders') {
+                        refreshOrders();
+                    } else if (tabId === 'clients') {
+                        refreshClients();
+                    } else if (tabId === 'products') {
+                        refreshProducts();
+                    } else if (tabId === 'reports') {
+                        updateReports();
+                    } else if (tabId === 'settings') {
+                        loadSettings();
+                    }
+                });
+            });
+        }
+
+        // Cargar configuración guardada
+        function loadSavedConfig() {
+            const savedToken = localStorage.getItem('githubToken');
+            
+            if (savedToken) {
+                document.getElementById('github-token').value = savedToken;
+                githubToken = savedToken;
+            }
+        }
+
+        // Guardar configuración
+        function saveConfig() {
+            localStorage.setItem('githubToken', githubToken);
+        }
+
+        // Probar conexión con GitHub
+        async function testConnection() {
+            githubToken = document.getElementById('github-token').value;
+            
+            if (!githubToken) {
+                showStatus('Por favor, ingresa tu token de GitHub', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('Probando conexión con GitHub...', 'success');
+                
+                // Guardar la configuración
+                saveConfig();
+                
+                // Probar acceso al repositorio
+                const repoResponse = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}`, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!repoResponse.ok) {
+                    if (repoResponse.status === 404) {
+                        throw new Error('Repositorio no encontrado. Verifica que el repositorio exista.');
+                    } else if (repoResponse.status === 403) {
+                        throw new Error('Token sin permisos suficientes. Asegúrate de que el token tenga permisos "repo".');
+                    } else if (repoResponse.status === 401) {
+                        throw new Error('Token inválido o expirado. Genera un nuevo token.');
+                    } else {
+                        throw new Error(`Error ${repoResponse.status}: ${repoResponse.statusText}`);
+                    }
+                }
+                
+                document.getElementById('connection-status').textContent = 'Conectado ✓';
+                document.getElementById('connection-status').style.color = 'green';
+                
+                showStatus('✅ Conexión exitosa con GitHub. Puedes cargar y guardar archivos.', 'success');
+                
+            } catch (error) {
+                document.getElementById('connection-status').textContent = 'Error de conexión';
+                document.getElementById('connection-status').style.color = 'red';
+                showStatus(`❌ Error de conexión: ${error.message}`, 'error');
+            }
+        }
+
+        // Cargar datos desde GitHub
+        async function loadFromGitHub() {
+            githubToken = document.getElementById('github-token').value;
+            
+            if (!githubToken) {
+                showStatus('Por favor, ingresa tu token de GitHub', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('Cargando datos desde GitHub...', 'success');
+                
+                // Guardar la configuración
+                saveConfig();
+                
+                // Obtener el contenido del archivo
+                const fileResponse = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.filePath}`, {
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (!fileResponse.ok) {
+                    if (fileResponse.status === 404) {
+                        showStatus('El archivo no existe. Se creará uno nuevo al guardar.', 'warning');
+                        return;
+                    } else if (fileResponse.status === 403) {
+                        throw new Error('Token sin permisos de lectura. Verifica los permisos del token.');
+                    } else {
+                        throw new Error(`Error ${fileResponse.status}: ${fileResponse.statusText}`);
+                    }
+                }
+                
+                const fileData = await fileResponse.json();
+                
+                // Decodificar el contenido (está en base64)
+                const content = decodeURIComponent(escape(atob(fileData.content)));
+                const jsonData = JSON.parse(content);
+                
+                // Actualizar los datos de la aplicación
+                appData = jsonData;
+                currentFileSha = fileData.sha;
+                
+                document.getElementById('connection-status').textContent = 'Conectado ✓';
+                document.getElementById('connection-status').style.color = 'green';
+                
+                // Actualizar la interfaz
+                updateUI();
+                
+                showStatus('Datos cargados correctamente desde GitHub', 'success');
+            } catch (error) {
+                console.error('Error al cargar el archivo:', error);
+                showStatus(`Error al cargar los datos: ${error.message}`, 'error');
+            }
+        }
+
+        // Guardar datos en GitHub
+        async function saveToGitHub() {
+            githubToken = document.getElementById('github-token').value;
+            
+            if (!githubToken) {
+                showStatus('Primero debes ingresar tu token de GitHub', 'error');
+                return;
+            }
+            
+            try {
+                showStatus('Guardando en GitHub...', 'success');
+                
+                // Guardar la configuración
+                saveConfig();
+                
+                // Actualizar la fecha de última actualización
+                appData.metadata.ultima_actualizacion = new Date().toISOString();
+                
+                // Codificar el contenido
+                const content = JSON.stringify(appData, null, 2);
+                const encodedContent = btoa(unescape(encodeURIComponent(content)));
+                
+                // Preparar los datos para la API
+                const putData = {
+                    message: `Actualización desde Sistema de Órdenes - ${new Date().toLocaleString()}`,
+                    content: encodedContent,
+                    sha: currentFileSha || undefined
+                };
+                
+                // Realizar la solicitud PUT para crear/actualizar el archivo
+                const saveResponse = await fetch(`https://api.github.com/repos/${CONFIG.owner}/${CONFIG.repo}/contents/${CONFIG.filePath}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `token ${githubToken}`,
+                        'Accept': 'application/vnd.github.v3+json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(putData)
+                });
+                
+                if (!saveResponse.ok) {
+                    let errorMessage = `Error ${saveResponse.status}: ${saveResponse.statusText}`;
+                    
+                    if (saveResponse.status === 403) {
+                        const responseText = await saveResponse.text();
+                        if (responseText.includes('rate limit')) {
+                            errorMessage = 'Límite de API excedido. Espera unos minutos.';
+                        } else if (responseText.includes('permission')) {
+                            errorMessage = 'Permisos insuficientes. El token necesita permisos de escritura (repo).';
+                        } else {
+                            errorMessage = 'Acceso denegado. Verifica que el token tenga los permisos correctos.';
+                        }
+                    } else if (saveResponse.status === 409) {
+                        errorMessage = 'Conflicto: El archivo fue modificado. Recarga y vuelve a intentar.';
+                    }
+                    
+                    throw new Error(errorMessage);
+                }
+                
+                const saveData = await saveResponse.json();
+                currentFileSha = saveData.content.sha;
+                
+                showStatus('✅ Datos guardados correctamente en GitHub', 'success');
+            } catch (error) {
+                console.error('Error al guardar en GitHub:', error);
+                showStatus(`❌ Error al guardar en GitHub: ${error.message}`, 'error');
+            }
+        }
+
+        // Actualizar toda la interfaz de usuario
+        function updateUI() {
+            updateDashboard();
+            refreshOrders();
+            refreshClients();
+            refreshProducts();
+            updateReports();
+            loadSettings();
+        }
+
+        // Actualizar el dashboard
+        function updateDashboard() {
+            const totalOrders = appData.ordenes.length;
+            const pendingOrders = appData.ordenes.filter(o => o.estado === 'pendiente').length;
+            const completedOrders = appData.ordenes.filter(o => o.estado === 'completada').length;
+            const totalClients = appData.clientes.length;
+            
+            document.getElementById('total-orders').textContent = totalOrders;
+            document.getElementById('pending-orders').textContent = pendingOrders;
+            document.getElementById('completed-orders').textContent = completedOrders;
+            document.getElementById('total-clients').textContent = totalClients;
+            
+            // Mostrar órdenes recientes
+            const recentOrdersContainer = document.getElementById('recent-orders');
+            const recentOrders = appData.ordenes
+                .sort((a, b) => new Date(b.fecha_creacion) - new Date(a.fecha_creacion))
+                .slice(0, 5);
+            
+            if (recentOrders.length === 0) {
+                recentOrdersContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i>📋</i>
+                        <p>No hay órdenes recientes</p>
+                        <p>Las órdenes recientes aparecerán aquí</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            recentOrdersContainer.innerHTML = recentOrders.map(order => {
+                const client = appData.clientes.find(c => c.id === order.cliente_id) || { nombre: 'Cliente no encontrado' };
+                return `
+                    <div class="order-item">
+                        <div class="order-header">
+                            <h4>Orden #${order.id} - ${client.nombre}</h4>
+                            <span class="order-status status-${order.estado}">${order.estado.toUpperCase()}</span>
+                        </div>
+                        <p><strong>Descripción:</strong> ${order.descripcion.substring(0, 100)}${order.descripcion.length > 100 ? '...' : ''}</p>
+                        <p><strong>Fecha:</strong> ${formatDate(order.fecha_creacion)}</p>
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editOrder('${order.id}')">Ver</button>
+                            <button class="action-btn complete-btn" onclick="completeOrder('${order.id}')">Completar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Actualizar la lista de órdenes
+        function refreshOrders() {
+            const container = document.getElementById('orders-list');
+            
+            if (appData.ordenes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i>📋</i>
+                        <p>No hay órdenes de trabajo registradas</p>
+                        <p>Carga los datos desde GitHub o crea una nueva orden</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.ordenes.map(order => {
+                const client = appData.clientes.find(c => c.id === order.cliente_id) || { nombre: 'Cliente no encontrado' };
+                return `
+                    <div class="order-item">
+                        <div class="order-header">
+                            <h4>Orden #${order.id} - ${client.nombre}</h4>
+                            <span class="order-status status-${order.estado}">${order.estado.toUpperCase()}</span>
+                        </div>
+                        <p><strong>Descripción:</strong> ${order.descripcion}</p>
+                        <p><strong>Prioridad:</strong> ${order.prioridad}</p>
+                        <p><strong>Fecha creación:</strong> ${formatDate(order.fecha_creacion)}</p>
+                        ${order.fecha_limite ? `<p><strong>Fecha límite:</strong> ${formatDate(order.fecha_limite)}</p>` : ''}
+                        ${order.presupuesto ? `<p><strong>Presupuesto:</strong> ${formatCurrency(order.presupuesto)}</p>` : ''}
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editOrder('${order.id}')">Editar</button>
+                            <button class="action-btn complete-btn" onclick="completeOrder('${order.id}')">Completar</button>
+                            <button class="action-btn delete-btn" onclick="deleteOrder('${order.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Actualizar la lista de clientes
+        function refreshClients() {
+            const container = document.getElementById('clients-list');
+            
+            if (appData.clientes.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i>👥</i>
+                        <p>No hay clientes registrados</p>
+                        <p>Carga los datos desde GitHub o agrega un nuevo cliente</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.clientes.map(client => {
+                const clientOrders = appData.ordenes.filter(o => o.cliente_id === client.id);
+                return `
+                    <div class="client-item">
+                        <div class="client-header">
+                            <h4>${client.nombre} ${client.apellido}</h4>
+                            <span>${clientOrders.length} órdenes</span>
+                        </div>
+                        <p><strong>Email:</strong> ${client.email || 'No especificado'}</p>
+                        <p><strong>Teléfono:</strong> ${client.telefono || 'No especificado'}</p>
+                        <p><strong>Dirección:</strong> ${client.direccion || 'No especificada'}</p>
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editClient('${client.id}')">Editar</button>
+                            <button class="action-btn delete-btn" onclick="deleteClient('${client.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Actualizar la lista de productos
+        function refreshProducts() {
+            const container = document.getElementById('products-list');
+            
+            if (appData.productos.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i>📦</i>
+                        <p>No hay productos registrados</p>
+                        <p>Carga los datos desde GitHub o agrega un nuevo producto</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = appData.productos.map(product => {
+                return `
+                    <div class="product-item">
+                        <div class="product-header">
+                            <h4>${product.nombre}</h4>
+                            <span>${formatCurrency(product.precio)}</span>
+                        </div>
+                        <p><strong>Categoría:</strong> ${product.categoria}</p>
+                        <p><strong>Descripción:</strong> ${product.descripcion || 'No hay descripción'}</p>
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editProduct('${product.id}')">Editar</button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct('${product.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Actualizar reportes
+        function updateReports() {
+            // Calcular ingresos totales
+            const totalIncome = appData.ordenes
+                .filter(o => o.estado === 'completada')
+                .reduce((sum, order) => sum + (order.presupuesto || 0), 0);
+            
+            // Órdenes este mes
+            const currentMonth = new Date().getMonth();
+            const currentYear = new Date().getFullYear();
+            const monthOrders = appData.ordenes.filter(o => {
+                const orderDate = new Date(o.fecha_creacion);
+                return orderDate.getMonth() === currentMonth && orderDate.getFullYear() === currentYear;
+            }).length;
+            
+            // Clientes nuevos este mes
+            const newClients = appData.clientes.filter(c => {
+                const clientDate = new Date(c.fecha_registro);
+                return clientDate.getMonth() === currentMonth && clientDate.getFullYear() === currentYear;
+            }).length;
+            
+            document.getElementById('total-income').textContent = formatCurrency(totalIncome);
+            document.getElementById('month-orders').textContent = monthOrders;
+            document.getElementById('new-clients').textContent = newClients;
+            
+            // Aquí iría la lógica para crear gráficos (simplificado)
+            // En una implementación real, usarías una librería como Chart.js
+        }
+
+        // Cargar configuración
+        function loadSettings() {
+            if (appData.configuracion && appData.configuracion.empresa) {
+                document.getElementById('company-name').value = appData.configuracion.empresa.nombre || '';
+                document.getElementById('company-address').value = appData.configuracion.empresa.direccion || '';
+                document.getElementById('company-phone').value = appData.configuracion.empresa.telefono || '';
+                document.getElementById('company-email').value = appData.configuracion.empresa.email || '';
+                document.getElementById('default-tax').value = appData.configuracion.empresa.impuesto || 19;
+            }
+        }
+
+        // Guardar configuración
+        function saveSettings(e) {
+            e.preventDefault();
+            
+            appData.configuracion.empresa = {
+                nombre: document.getElementById('company-name').value,
+                direccion: document.getElementById('company-address').value,
+                telefono: document.getElementById('company-phone').value,
+                email: document.getElementById('company-email').value,
+                impuesto: parseFloat(document.getElementById('default-tax').value) || 19
+            };
+            
+            showStatus('Configuración guardada correctamente', 'success');
+        }
+
+        // Mostrar modal de nueva orden
+        function showOrderModal() {
+            // Limpiar y llenar el select de clientes
+            const clientSelect = document.getElementById('order-client');
+            clientSelect.innerHTML = '<option value="">Selecciona un cliente</option>';
+            appData.clientes.forEach(client => {
+                const option = document.createElement('option');
+                option.value = client.id;
+                option.textContent = `${client.nombre} ${client.apellido}`;
+                clientSelect.appendChild(option);
+            });
+            
+            // Limpiar y llenar el select de productos
+            const productSelect = document.getElementById('order-products');
+            productSelect.innerHTML = '<option value="">Selecciona productos/servicios</option>';
+            appData.productos.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.nombre} - ${formatCurrency(product.precio)}`;
+                productSelect.appendChild(option);
+            });
+            
+            // Mostrar el modal
+            document.getElementById('order-modal').style.display = 'flex';
+        }
+
+        // Ocultar modal de orden
+        function hideOrderModal() {
+            document.getElementById('order-modal').style.display = 'none';
+            document.getElementById('order-form').reset();
+        }
+
+        // Crear nueva orden
+        function createOrder(e) {
+            e.preventDefault();
+            
+            const clientId = document.getElementById('order-client').value;
+            const priority = document.getElementById('order-priority').value;
+            const description = document.getElementById('order-description').value;
+            const selectedProducts = Array.from(document.getElementById('order-products').selectedOptions).map(opt => opt.value);
+            const estimate = document.getElementById('order-estimate').value;
+            const deadline = document.getElementById('order-deadline').value;
+            
+            if (!clientId || !description) {
+                showStatus('Por favor, completa los campos obligatorios', 'error');
+                return;
+            }
+            
+            const newOrder = {
+                id: generateId(),
+                cliente_id: clientId,
+                descripcion: description,
+                prioridad: priority,
+                productos: selectedProducts,
+                presupuesto: estimate ? parseFloat(estimate) : null,
+                fecha_limite: deadline || null,
+                fecha_creacion: new Date().toISOString(),
+                estado: 'pendiente'
+            };
+            
+            appData.ordenes.push(newOrder);
+            
+            // Actualizar la interfaz
+            updateUI();
+            
+            // Ocultar el modal y limpiar el formulario
+            hideOrderModal();
+            
+            showStatus('Orden creada correctamente', 'success');
+        }
+
+        // Mostrar modal de nuevo cliente
+        function showClientModal() {
+            document.getElementById('client-modal').style.display = 'flex';
+        }
+
+        // Ocultar modal de cliente
+        function hideClientModal() {
+            document.getElementById('client-modal').style.display = 'none';
+            document.getElementById('client-form').reset();
+        }
+
+        // Crear nuevo cliente
+        function createClient(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('client-name').value;
+            const lastname = document.getElementById('client-lastname').value;
+            const email = document.getElementById('client-email').value;
+            const phone = document.getElementById('client-phone').value;
+            const address = document.getElementById('client-address').value;
+            
+            if (!name || !lastname) {
+                showStatus('Por favor, completa los campos obligatorios', 'error');
+                return;
+            }
+            
+            const newClient = {
+                id: generateId(),
+                nombre: name,
+                apellido: lastname,
+                email: email || null,
+                telefono: phone || null,
+                direccion: address || null,
+                fecha_registro: new Date().toISOString()
+            };
+            
+            appData.clientes.push(newClient);
+            
+            // Actualizar la interfaz
+            updateUI();
+            
+            // Ocultar el modal y limpiar el formulario
+            hideClientModal();
+            
+            showStatus('Cliente creado correctamente', 'success');
+        }
+
+        // Mostrar modal de nuevo producto
+        function showProductModal() {
+            document.getElementById('product-modal').style.display = 'flex';
+        }
+
+        // Ocultar modal de producto
+        function hideProductModal() {
+            document.getElementById('product-modal').style.display = 'none';
+            document.getElementById('product-form').reset();
+        }
+
+        // Crear nuevo producto
+        function createProduct(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('product-name').value;
+            const description = document.getElementById('product-description').value;
+            const price = document.getElementById('product-price').value;
+            const category = document.getElementById('product-category').value;
+            
+            if (!name || !price || !category) {
+                showStatus('Por favor, completa los campos obligatorios', 'error');
+                return;
+            }
+            
+            const newProduct = {
+                id: generateId(),
+                nombre: name,
+                descripcion: description || null,
+                precio: parseFloat(price),
+                categoria: category
+            };
+            
+            appData.productos.push(newProduct);
+            
+            // Actualizar la interfaz
+            updateUI();
+            
+            // Ocultar el modal y limpiar el formulario
+            hideProductModal();
+            
+            showStatus('Producto creado correctamente', 'success');
+        }
+
+        // Funciones auxiliares
+        function generateId() {
+            return 'id_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        function formatCurrency(amount) {
+            if (!amount) return '$0';
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0
+            }).format(amount);
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('es-CO');
+        }
+
+        function showStatus(message, type) {
+            const statusMessage = document.getElementById('status-message');
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message';
+            statusMessage.classList.add(`status-${type}`);
+            statusMessage.style.display = 'block';
+            
+            setTimeout(() => {
+                statusMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Funciones para buscar
+        function searchOrders() {
+            const query = document.getElementById('order-search').value.toLowerCase();
+            if (!query) {
+                refreshOrders();
+                return;
+            }
+            
+            const filteredOrders = appData.ordenes.filter(order => {
+                const client = appData.clientes.find(c => c.id === order.cliente_id);
+                const clientName = client ? `${client.nombre} ${client.apellido}`.toLowerCase() : '';
+                return order.descripcion.toLowerCase().includes(query) || 
+                       clientName.includes(query) ||
+                       order.id.includes(query);
+            });
+            
+            const container = document.getElementById('orders-list');
+            if (filteredOrders.length === 0) {
+                container.innerHTML = '<p>No se encontraron órdenes que coincidan con la búsqueda</p>';
+                return;
+            }
+            
+            container.innerHTML = filteredOrders.map(order => {
+                const client = appData.clientes.find(c => c.id === order.cliente_id) || { nombre: 'Cliente no encontrado' };
+                return `
+                    <div class="order-item">
+                        <div class="order-header">
+                            <h4>Orden #${order.id} - ${client.nombre}</h4>
+                            <span class="order-status status-${order.estado}">${order.estado.toUpperCase()}</span>
+                        </div>
+                        <p><strong>Descripción:</strong> ${order.descripcion}</p>
+                        <p><strong>Prioridad:</strong> ${order.prioridad}</p>
+                        <p><strong>Fecha creación:</strong> ${formatDate(order.fecha_creacion)}</p>
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editOrder('${order.id}')">Editar</button>
+                            <button class="action-btn complete-btn" onclick="completeOrder('${order.id}')">Completar</button>
+                            <button class="action-btn delete-btn" onclick="deleteOrder('${order.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function searchClients() {
+            const query = document.getElementById('client-search').value.toLowerCase();
+            if (!query) {
+                refreshClients();
+                return;
+            }
+            
+            const filteredClients = appData.clientes.filter(client => {
+                return client.nombre.toLowerCase().includes(query) || 
+                       client.apellido.toLowerCase().includes(query) ||
+                       client.email?.toLowerCase().includes(query) ||
+                       client.telefono?.includes(query);
+            });
+            
+            const container = document.getElementById('clients-list');
+            if (filteredClients.length === 0) {
+                container.innerHTML = '<p>No se encontraron clientes que coincidan con la búsqueda</p>';
+                return;
+            }
+            
+            container.innerHTML = filteredClients.map(client => {
+                const clientOrders = appData.ordenes.filter(o => o.cliente_id === client.id);
+                return `
+                    <div class="client-item">
+                        <div class="client-header">
+                            <h4>${client.nombre} ${client.apellido}</h4>
+                            <span>${clientOrders.length} órdenes</span>
+                        </div>
+                        <p><strong>Email:</strong> ${client.email || 'No especificado'}</p>
+                        <p><strong>Teléfono:</strong> ${client.telefono || 'No especificado'}</p>
+                        <p><strong>Dirección:</strong> ${client.direccion || 'No especificada'}</p>
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editClient('${client.id}')">Editar</button>
+                            <button class="action-btn delete-btn" onclick="deleteClient('${client.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function searchProducts() {
+            const query = document.getElementById('product-search').value.toLowerCase();
+            if (!query) {
+                refreshProducts();
+                return;
+            }
+            
+            const filteredProducts = appData.productos.filter(product => {
+                return product.nombre.toLowerCase().includes(query) || 
+                       product.descripcion?.toLowerCase().includes(query) ||
+                       product.categoria.toLowerCase().includes(query);
+            });
+            
+            const container = document.getElementById('products-list');
+            if (filteredProducts.length === 0) {
+                container.innerHTML = '<p>No se encontraron productos que coincidan con la búsqueda</p>';
+                return;
+            }
+            
+            container.innerHTML = filteredProducts.map(product => {
+                return `
+                    <div class="product-item">
+                        <div class="product-header">
+                            <h4>${product.nombre}</h4>
+                            <span>${formatCurrency(product.precio)}</span>
+                        </div>
+                        <p><strong>Categoría:</strong> ${product.categoria}</p>
+                        <p><strong>Descripción:</strong> ${product.descripcion || 'No hay descripción'}</p>
+                        <div class="actions">
+                            <button class="action-btn edit-btn" onclick="editProduct('${product.id}')">Editar</button>
+                            <button class="action-btn delete-btn" onclick="deleteProduct('${product.id}')">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Funciones para editar/eliminar (simplificadas para el ejemplo)
+        window.editOrder = function(id) {
+            alert(`Editar orden ${id} - Esta funcionalidad se implementará en una versión futura`);
+        };
+
+        window.completeOrder = function(id) {
+            if (confirm('¿Marcar esta orden como completada?')) {
+                const order = appData.ordenes.find(o => o.id === id);
+                if (order) {
+                    order.estado = 'completada';
+                    updateUI();
+                    showStatus('Orden marcada como completada', 'success');
+                }
+            }
+        };
+
+        window.deleteOrder = function(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar esta orden?')) {
+                appData.ordenes = appData.ordenes.filter(o => o.id !== id);
+                updateUI();
+                showStatus('Orden eliminada correctamente', 'success');
+            }
+        };
+
+        window.editClient = function(id) {
+            alert(`Editar cliente ${id} - Esta funcionalidad se implementará en una versión futura`);
+        };
+
+        window.deleteClient = function(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este cliente?')) {
+                // Verificar si el cliente tiene órdenes
+                const clientOrders = appData.ordenes.filter(o => o.cliente_id === id);
+                if (clientOrders.length > 0) {
+                    showStatus('No se puede eliminar el cliente porque tiene órdenes asociadas', 'error');
+                    return;
+                }
+                
+                appData.clientes = appData.clientes.filter(c => c.id !== id);
+                updateUI();
+                showStatus('Cliente eliminado correctamente', 'success');
+            }
+        };
+
+        window.editProduct = function(id) {
+            alert(`Editar producto ${id} - Esta funcionalidad se implementará en una versión futura`);
+        };
+
+        window.deleteProduct = function(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+                appData.productos = appData.productos.filter(p => p.id !== id);
+                updateUI();
+                showStatus('Producto eliminado correctamente', 'success');
+            }
+        };
+    </script>
+</body>
+</html>
