@@ -436,7 +436,7 @@
             border-radius: var(--border-radius);
         }
         
-        .order-item, .client-item, .product-item, .material-item {
+        .order-item, .client-item, .product-item, .material-item, .supplier-item {
             border: 1px solid var(--gray-light);
             border-radius: var(--border-radius);
             padding: 15px;
@@ -446,12 +446,12 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.03);
         }
         
-        .order-item:hover, .client-item:hover, .product-item:hover, .material-item:hover {
+        .order-item:hover, .client-item:hover, .product-item:hover, .material-item:hover, .supplier-item:hover {
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
             transform: translateY(-2px);
         }
         
-        .order-header, .client-header, .product-header, .material-header {
+        .order-header, .client-header, .product-header, .material-header, .supplier-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -794,6 +794,32 @@
             margin-top: 5px;
         }
         
+        /* Estilos para productos seleccionados */
+        .selected-product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid #f1f1f1;
+        }
+        
+        /* Tablas en reportes */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        
         /* Responsive */
         @media (max-width: 1024px) {
             .main-content {
@@ -907,6 +933,12 @@
                     <a href="#" class="nav-link" data-tab="materials">
                         <i class="fas fa-layer-group"></i>
                         <span>Materiales</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" data-tab="suppliers">
+                        <i class="fas fa-truck"></i>
+                        <span>Proveedores</span>
                     </a>
                 </li>
                 <li class="nav-item">
@@ -1074,6 +1106,31 @@
                     </div>
                 </div>
                 
+                <div class="tab-content" id="suppliers-tab">
+                    <h2><i class="fas fa-truck"></i> Gestión de Proveedores</h2>
+                    
+                    <div class="form-actions">
+                        <button class="btn" id="new-supplier-btn"><i class="fas fa-plus"></i> Nuevo Proveedor</button>
+                        <button class="btn btn-outline" id="refresh-suppliers"><i class="fas fa-sync-alt"></i> Actualizar</button>
+                    </div>
+                    
+                    <div class="search-bar">
+                        <input type="text" id="supplier-search" placeholder="Buscar proveedores...">
+                        <button class="btn" id="search-supplier-btn"><i class="fas fa-search"></i> Buscar</button>
+                    </div>
+                    
+                    <div class="section">
+                        <h2><i class="fas fa-list"></i> Lista de Proveedores</h2>
+                        <div id="suppliers-list">
+                            <div class="empty-state">
+                                <i class="fas fa-truck"></i>
+                                <h3>No hay proveedores registrados</h3>
+                                <p>Agrega proveedores para gestionar tus materiales</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="tab-content" id="reports-tab">
                     <h2><i class="fas fa-chart-line"></i> Reportes Financieros</h2>
                     
@@ -1098,20 +1155,20 @@
                         
                         <div class="card">
                             <div class="card-icon">
-                                <i class="fas fa-percent"></i>
+                                <i class="fas fa-truck"></i>
                             </div>
-                            <h3>Ganancia Neta</h3>
-                            <div class="amount" id="net-profit">$0</div>
-                            <p>Ingresos - Costos</p>
+                            <h3>Gastos de Delivery</h3>
+                            <div class="amount" id="total-delivery-cost">$0</div>
+                            <p>Total gastado en delivery</p>
                         </div>
                         
                         <div class="card">
                             <div class="card-icon">
-                                <i class="fas fa-check-circle"></i>
+                                <i class="fas fa-percent"></i>
                             </div>
-                            <h3>Recaudado (Abonos)</h3>
-                            <div class="amount" id="total-deposit">$0</div>
-                            <p>Total abonado por clientes</p>
+                            <h3>Ganancia Neta</h3>
+                            <div class="amount" id="net-profit">$0</div>
+                            <p>Ingresos - Costos - Delivery</p>
                         </div>
                     </div>
                     
@@ -1283,9 +1340,21 @@
                         <input type="text" id="product-search-input" placeholder="Buscar productos...">
                         <i class="fas fa-search"></i>
                     </div>
-                    <select id="order-products" multiple size="4">
-                        <option value="" disabled>Selecciona productos/servicios</option>
+                    <select id="order-products">
+                        <option value="">Selecciona un producto/servicio</option>
                     </select>
+                    <div class="form-row" style="margin-top: 10px;">
+                        <div class="form-group">
+                            <label for="product-quantity">Cantidad:</label>
+                            <input type="number" id="product-quantity" min="1" value="1" style="width: 100px;">
+                        </div>
+                        <button type="button" class="btn" id="add-product-btn" style="align-self: flex-end;">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                    <div id="selected-products-list" style="margin-top: 15px; border: 1px solid #e9ecef; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto;">
+                        <!-- Los productos seleccionados aparecerán aquí -->
+                    </div>
                 </div>
                 
                 <h3><i class="fas fa-truck-moving"></i> Específicaciones y Entrega</h3>
@@ -1472,12 +1541,58 @@
         </div>
     </div>
 
+    <div class="modal" id="supplier-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="supplier-modal-title">Nuevo Proveedor</h2>
+                <button class="close-modal">×</button>
+            </div>
+            <form id="supplier-form">
+                <input type="hidden" id="supplier-id">
+                <div class="form-group">
+                    <label for="supplier-company">Empresa:</label>
+                    <input type="text" id="supplier-company" required placeholder="Nombre de la empresa">
+                </div>
+                <div class="form-group">
+                    <label for="supplier-contact">Persona de Contacto:</label>
+                    <input type="text" id="supplier-contact" placeholder="Nombre del contacto">
+                </div>
+                <div class="form-group">
+                    <label for="supplier-email">Email:</label>
+                    <input type="email" id="supplier-email" placeholder="Email de contacto">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="supplier-phone">Teléfono:</label>
+                        <input type="text" id="supplier-phone" placeholder="Teléfono fijo">
+                    </div>
+                    <div class="form-group">
+                        <label for="supplier-whatsapp">WhatsApp:</label>
+                        <input type="text" id="supplier-whatsapp" placeholder="Número de WhatsApp">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="supplier-address">Dirección:</label>
+                    <textarea id="supplier-address" placeholder="Dirección del proveedor"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="supplier-materials">Materiales que provee:</label>
+                    <textarea id="supplier-materials" placeholder="Lista de materiales que provee"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn"><i class="fas fa-plus"></i> <span id="supplier-submit-text">Crear Proveedor</span></button>
+                    <button type="button" class="btn btn-danger" id="cancel-supplier"><i class="fas fa-times"></i> Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Variables globales
         let appData = {
             metadata: {
                 ultima_actualizacion: new Date().toISOString(),
-                version_esquema: "2.2" // Esquema actualizado
+                version_esquema: "2.3" // Esquema actualizado
             },
             configuracion: {
                 empresa: {
@@ -1490,14 +1605,14 @@
                 },
                 mensajes_whatsapp: {
                     diseno_iniciado: "Hola [CLIENTE], tu orden #[ID_ORDEN] '[DESCRIPCION]' ha comenzado. Te contactaremos pronto para la aprobación.",
-                    esperando_aprobacion: "¡Hola [CLIENTE]! Tu diseño de orden #[ID_ORDEN] está listo para aprobar. Por favor, revisa y confirma para continuar con la producción.",
+                    esperando_aprobacion: "¡Hola [CLIENTE]! Tu diseño de orden #[ID_ORDEN] está listo para aprobar. Por favor, revisa y confirma para continuar con la producción.\n\n*IMPORTANTE:* Verifica cuidadosamente que no haya errores ortográficos o de diseño, ya que una vez aprobado, *[NOMBRE_EMPRESA]* no se hará responsable de estos detalles.",
                     en_produccion: "Hola [CLIENTE], tu orden #[ID_ORDEN] '[DESCRIPCION]' está ahora en producción. Fecha de entrega estimada: [FECHA_LIMITE].",
                     pedido_listo: "¡Hola [CLIENTE]! Tu orden #[ID_ORDEN] está terminada y lista para retiro o envío. Coordinaremos la entrega contigo.",
                     agradecimiento_final: "¡Hola [CLIENTE]! 🎉 Queremos agradecerte por confiar en *[NOMBRE_EMPRESA]* con tu orden #[ID_ORDEN]. ¡Vuelve pronto! ✨"
                 },
                 mensajes_correo: { 
                     diseno_iniciado: "Asunto: [NOMBRE_EMPRESA] - Diseño de Orden #[ID_ORDEN] Iniciado. \n\nHola [CLIENTE], el diseño de tu orden #[ID_ORDEN] '[DESCRIPCION]' ha comenzado. Te contactaremos pronto para la aprobación.",
-                    esperando_aprobacion: "Asunto: ¡URGENTE! [NOMBRE_EMPRESA] - Diseño de Orden #[ID_ORDEN] Listo para Aprobar. \n\nHola [CLIENTE], ¡Tu diseño está listo! Por favor, revisa el archivo adjunto (si aplica) o comunícate con nosotros para dar tu aprobación. Sin tu OK, no podemos pasar a producción.",
+                    esperando_aprobacion: "Asunto: ¡URGENTE! [NOMBRE_EMPRESA] - Diseño de Orden #[ID_ORDEN] Listo para Aprobar. \n\nHola [CLIENTE], ¡Tu diseño está listo! Por favor, revisa el archivo adjunto (si aplica) o comunícate con nosotros para dar tu aprobación. Sin tu OK, no podemos pasar a producción.\n\nIMPORTANTE: Verifica cuidadosamente que no haya errores ortográficos o de diseño, ya que una vez aprobado, [NOMBRE_EMPRESA] no se hará responsable de estos detalles.",
                     en_produccion: "Asunto: [NOMBRE_EMPRESA] - Orden #[ID_ORDEN] en Producción. \n\nHola [CLIENTE], tu orden '[DESCRIPCION]' ha sido aprobada y se encuentra ahora en la fase de producción. Fecha de entrega estimada: [FECHA_LIMITE].",
                     pedido_listo: "Asunto: ¡Tu Pedido Está Listo! [NOMBRE_EMPRESA] - Orden #[ID_ORDEN] Terminada. \n\nHola [CLIENTE], tu orden '[DESCRIPCION]' está terminada y lista para retiro o envío. Coordinaremos la entrega contigo.",
                     agradecimiento_final: "Asunto: ¡Gracias por tu compra! [NOMBRE_EMPRESA] - Orden #[ID_ORDEN]. \n\n¡Hola [CLIENTE]! 🎉 Queremos agradecerte por confiar en *[NOMBRE_EMPRESA]* con tu orden #[ID_ORDEN]. Esperamos que te encante el resultado. ¡Vuelve pronto! ✨"
@@ -1506,12 +1621,14 @@
             clientes: [],
             productos: [],
             ordenes: [],
-            materiales: [] 
+            materiales: [],
+            proveedores: []
         };
         
         let currentFileSha = '';
         let githubToken = '';
         let autoSaveEnabled = true;
+        let selectedProducts = [];
 
         const CONFIG = {
             owner: 'AppServerMV',
@@ -1549,7 +1666,7 @@
             }, 3000);
         }
 
-        // --- GitHub API Functions (Mantenidas) ---
+        // --- GitHub API Functions ---
         async function fetchGitHubData(url, method = 'GET', data = null) {
             if (!githubToken) { showNotification('Token de GitHub no configurado. Operación local.', 'warning'); return null; }
             const headers = {
@@ -1579,10 +1696,11 @@
                     const loadedData = JSON.parse(content);
                     appData = Object.assign({}, appData, loadedData); 
                     if (!appData.materiales) appData.materiales = [];
+                    if (!appData.proveedores) appData.proveedores = [];
                     if (!appData.configuracion.mensajes_whatsapp) {
                         appData.configuracion.mensajes_whatsapp = {
                             diseno_iniciado: "Hola [CLIENTE], tu orden #[ID_ORDEN] '[DESCRIPCION]' ha comenzado. Te contactaremos pronto para la aprobación.",
-                            esperando_aprobacion: "¡Hola [CLIENTE]! Tu diseño de orden #[ID_ORDEN] está listo para aprobar. Por favor, revisa y confirma para continuar con la producción.",
+                            esperando_aprobacion: "¡Hola [CLIENTE]! Tu diseño de orden #[ID_ORDEN] está listo para aprobar. Por favor, revisa y confirma para continuar con la producción.\n\n*IMPORTANTE:* Verifica cuidadosamente que no haya errores ortográficos o de diseño, ya que una vez aprobado, *[NOMBRE_EMPRESA]* no se hará responsable de estos detalles.",
                             en_produccion: "Hola [CLIENTE], tu orden #[ID_ORDEN] '[DESCRIPCION]' está ahora en producción. Fecha de entrega estimada: [FECHA_LIMITE].",
                             pedido_listo: "¡Hola [CLIENTE]! Tu orden #[ID_ORDEN] está terminada y lista para retiro o envío. Coordinaremos la entrega contigo.",
                             agradecimiento_final: "¡Hola [CLIENTE]! 🎉 Queremos agradecerte por confiar en *[NOMBRE_EMPRESA]* con tu orden #[ID_ORDEN]. ¡Vuelve pronto! ✨"
@@ -1626,15 +1744,14 @@
             await saveToGitHub();
         }
 
-        // --- Generación de ID con fecha ---
+        // --- Generación de ID con fecha CORREGIDA ---
         function generateOrderId() {
             const now = new Date();
             const dateStr = now.toISOString().slice(0,10).replace(/-/g, '');
             
-            // Buscar órdenes del día actual
+            // Buscar todas las órdenes existentes que empiecen con la fecha de hoy
             const todayOrders = appData.ordenes.filter(order => {
-                const orderDate = new Date(order.fecha_entrada_pedido);
-                return orderDate.toISOString().slice(0,10).replace(/-/g, '') === dateStr;
+                return order.id.startsWith(dateStr);
             });
             
             // Generar ID con formato: YYYYMMDD-XXXX
@@ -1657,7 +1774,98 @@
             window.open(mapsUrl, '_blank');
         }
 
-        // --- Lógica de Materiales (Mantenida) ---
+        // --- Funciones para manejar productos seleccionados ---
+        function addProductToOrder() {
+            const productSelect = document.getElementById('order-products');
+            const quantityInput = document.getElementById('product-quantity');
+            const selectedProductId = productSelect.value;
+            const quantity = parseInt(quantityInput.value) || 1;
+
+            if (!selectedProductId) {
+                showNotification('Selecciona un producto primero', 'warning');
+                return;
+            }
+
+            const product = appData.productos.find(p => p.id == selectedProductId);
+            if (!product) return;
+
+            // Verificar si el producto ya está en la lista
+            const existingIndex = selectedProducts.findIndex(p => p.id == selectedProductId);
+            if (existingIndex !== -1) {
+                selectedProducts[existingIndex].quantity += quantity;
+            } else {
+                selectedProducts.push({
+                    id: product.id,
+                    name: product.nombre,
+                    price: product.precio_venta,
+                    quantity: quantity
+                });
+            }
+
+            renderSelectedProducts();
+            calculateOrderTotal();
+            
+            // Resetear selección
+            productSelect.value = '';
+            quantityInput.value = 1;
+        }
+
+        function renderSelectedProducts() {
+            const container = document.getElementById('selected-products-list');
+            container.innerHTML = '';
+
+            if (selectedProducts.length === 0) {
+                container.innerHTML = '<p style="color: #6c757d; text-align: center;">No hay productos seleccionados</p>';
+                return;
+            }
+
+            selectedProducts.forEach((product, index) => {
+                const productElement = document.createElement('div');
+                productElement.className = 'selected-product-item';
+                productElement.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid #f1f1f1;';
+                productElement.innerHTML = `
+                    <div>
+                        <strong>${product.name}</strong><br>
+                        <small>Cantidad: ${product.quantity} | ${formatCurrency(product.price)} c/u</small>
+                    </div>
+                    <div>
+                        <span style="margin-right: 10px;">${formatCurrency(product.price * product.quantity)}</span>
+                        <button type="button" class="action-btn delete-btn" onclick="removeProductFromOrder(${index})" style="padding: 4px 8px;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(productElement);
+            });
+        }
+
+        window.removeProductFromOrder = function(index) {
+            selectedProducts.splice(index, 1);
+            renderSelectedProducts();
+            calculateOrderTotal();
+        };
+
+        // --- Lógica de Cálculo de Orden ---
+        function calculateOrderTotal() {
+            const deliveryCheckbox = document.getElementById('order-delivery');
+            const extraInput = document.getElementById('order-extra');
+            const estimateInput = document.getElementById('order-estimate');
+            
+            const deliveryCost = deliveryCheckbox.checked ? (appData.configuracion.empresa.costo_delivery_fijo || 3500) : 0;
+            const extraCost = parseFloat(extraInput.value) || 0;
+            
+            let subtotal = 0;
+            selectedProducts.forEach(product => {
+                subtotal += product.price * product.quantity;
+            });
+            
+            const total = subtotal + deliveryCost + extraCost;
+            estimateInput.value = total.toFixed(0);
+            
+            document.getElementById('delivery-cost-display').textContent = formatNumber(appData.configuracion.empresa.costo_delivery_fijo || 3500);
+        }
+
+        // --- Lógica de Materiales ---
         function showMaterialModal(id = null) {
             const modal = document.getElementById('material-modal');
             const title = document.getElementById('material-modal-title');
@@ -1749,8 +1957,144 @@
             }
         };
 
-        // --- Lógica de Clientes y Productos (Mantenida) ---
+        // --- Lógica de Proveedores ---
+        function showSupplierModal(id = null) {
+            const modal = document.getElementById('supplier-modal');
+            const title = document.getElementById('supplier-modal-title');
+            const submitText = document.getElementById('supplier-submit-text');
+            const form = document.getElementById('supplier-form');
+            form.reset();
+            document.getElementById('supplier-id').value = '';
 
+            if (id) {
+                const supplier = appData.proveedores.find(s => s.id === id);
+                if (supplier) {
+                    title.textContent = 'Editar Proveedor';
+                    submitText.textContent = 'Guardar Cambios';
+                    document.getElementById('supplier-id').value = supplier.id;
+                    document.getElementById('supplier-company').value = supplier.empresa;
+                    document.getElementById('supplier-contact').value = supplier.contacto;
+                    document.getElementById('supplier-email').value = supplier.email;
+                    document.getElementById('supplier-phone').value = supplier.telefono;
+                    document.getElementById('supplier-whatsapp').value = supplier.whatsapp;
+                    document.getElementById('supplier-address').value = supplier.direccion;
+                    document.getElementById('supplier-materials').value = supplier.materiales;
+                }
+            } else {
+                title.textContent = 'Nuevo Proveedor';
+                submitText.textContent = 'Crear Proveedor';
+            }
+
+            modal.classList.add('active');
+        }
+
+        function saveSupplier(e) {
+            e.preventDefault();
+            const id = document.getElementById('supplier-id').value;
+            const empresa = document.getElementById('supplier-company').value;
+            const contacto = document.getElementById('supplier-contact').value;
+            const email = document.getElementById('supplier-email').value;
+            const telefono = document.getElementById('supplier-phone').value;
+            const whatsapp = document.getElementById('supplier-whatsapp').value;
+            const direccion = document.getElementById('supplier-address').value;
+            const materiales = document.getElementById('supplier-materials').value;
+
+            if (id) {
+                const supplierIndex = appData.proveedores.findIndex(s => s.id == id);
+                if (supplierIndex !== -1) {
+                    appData.proveedores[supplierIndex] = { 
+                        id: parseInt(id), 
+                        empresa, 
+                        contacto, 
+                        email, 
+                        telefono, 
+                        whatsapp, 
+                        direccion, 
+                        materiales 
+                    };
+                    showNotification('Proveedor actualizado correctamente', 'success');
+                }
+            } else {
+                const newId = appData.proveedores.length ? Math.max(...appData.proveedores.map(s => s.id)) + 1 : 1;
+                appData.proveedores.push({ 
+                    id: newId, 
+                    empresa, 
+                    contacto, 
+                    email, 
+                    telefono, 
+                    whatsapp, 
+                    direccion, 
+                    materiales 
+                });
+                showNotification('Proveedor creado correctamente', 'success');
+            }
+
+            autoSaveToGitHub();
+            updateUI();
+            hideSupplierModal();
+        }
+
+        function renderSuppliers(suppliers) {
+            const list = document.getElementById('suppliers-list');
+            list.innerHTML = '';
+
+            if (suppliers.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-truck"></i>
+                        <h3>No hay proveedores registrados</h3>
+                        <p>Agrega proveedores para gestionar tus materiales</p>
+                    </div>
+                `;
+                return;
+            }
+
+            suppliers.forEach(supplier => {
+                const item = document.createElement('div');
+                item.className = 'supplier-item';
+                item.innerHTML = `
+                    <div class="supplier-header">
+                        <strong style="font-size: 1.1rem;">${supplier.empresa}</strong>
+                    </div>
+                    <p><strong>Contacto:</strong> ${supplier.contacto || 'N/A'}</p>
+                    <p><strong>Email:</strong> ${supplier.email || 'N/A'}</p>
+                    <p><strong>Teléfono:</strong> ${supplier.telefono || 'N/A'} | <strong>WhatsApp:</strong> ${supplier.whatsapp || 'N/A'}</p>
+                    <p><strong>Dirección:</strong> ${supplier.direccion || 'N/A'}</p>
+                    <p><strong>Materiales:</strong> ${supplier.materiales || 'N/A'}</p>
+                    <div class="actions">
+                        <button class="action-btn edit-btn" onclick="editSupplier(${supplier.id})"><i class="fas fa-edit"></i> Editar</button>
+                        <button class="action-btn delete-btn" onclick="deleteSupplier(${supplier.id})"><i class="fas fa-trash-alt"></i> Eliminar</button>
+                        ${supplier.whatsapp ? `<a href="https://api.whatsapp.com/send?phone=${supplier.whatsapp}" target="_blank" class="action-btn whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>` : ''}
+                        ${supplier.email ? `<button class="action-btn email-btn" onclick="sendEmailToSupplier(${supplier.id})"><i class="fas fa-envelope"></i> Correo</button>` : ''}
+                        ${supplier.direccion ? `<button class="action-btn btn-map" onclick="openGoogleMaps('${supplier.direccion}')"><i class="fas fa-map-marker-alt"></i> Mapa</button>` : ''}
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        window.editSupplier = function(id) { showSupplierModal(id); };
+        
+        window.deleteSupplier = function(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar este proveedor?')) {
+                appData.proveedores = appData.proveedores.filter(s => s.id !== id);
+                autoSaveToGitHub();
+                updateUI();
+                showNotification('Proveedor eliminado correctamente', 'success');
+            }
+        };
+
+        window.sendEmailToSupplier = function(supplierId) {
+            const supplier = appData.proveedores.find(s => s.id === supplierId);
+            if (!supplier || !supplier.email) { 
+                showNotification('El proveedor no tiene un email registrado.', 'error'); 
+                return; 
+            }
+            const mailtoUrl = `mailto:${supplier.email}`;
+            window.open(mailtoUrl, '_blank');
+        };
+
+        // --- Lógica de Clientes y Productos ---
         function renderClients(clients) {
             const list = document.getElementById('clients-list');
             list.innerHTML = '';
@@ -1779,8 +2123,9 @@
                     <div class="actions">
                         <button class="action-btn edit-btn" onclick="editClient(${client.id})"><i class="fas fa-edit"></i> Editar</button>
                         <button class="action-btn delete-btn" onclick="deleteClient(${client.id})"><i class="fas fa-trash-alt"></i> Eliminar</button>
-                        <a href="https://api.whatsapp.com/send?phone=${client.telefono}" target="_blank" class="action-btn whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>
-                        <button class="action-btn email-btn" onclick="sendEmailToClient(${client.id})"><i class="fas fa-envelope"></i> Correo</button>
+                        ${client.telefono ? `<a href="https://api.whatsapp.com/send?phone=${client.telefono}" target="_blank" class="action-btn whatsapp-btn"><i class="fab fa-whatsapp"></i> WhatsApp</a>` : ''}
+                        ${client.email ? `<button class="action-btn email-btn" onclick="sendEmailToClient(${client.id})"><i class="fas fa-envelope"></i> Correo</button>` : ''}
+                        ${client.direccion ? `<button class="action-btn btn-map" onclick="openGoogleMaps('${client.direccion}')"><i class="fas fa-map-marker-alt"></i> Mapa</button>` : ''}
                     </div>
                 `;
                 list.appendChild(item);
@@ -1842,7 +2187,6 @@
         }
 
         function hideClientModal() { document.getElementById('client-modal').classList.remove('active'); }
-
 
         function renderProducts(products) {
             const list = document.getElementById('products-list');
@@ -1939,7 +2283,6 @@
         function hideProductModal() { document.getElementById('product-modal').classList.remove('active'); }
 
         // --- Lógica de Comunicación (WhatsApp y Email) ---
-
         function replacePlaceholders(template, order, client) {
             const totalPendiente = order.total_orden - order.abono;
             const subjectOrBody = template
@@ -1947,7 +2290,7 @@
                 .replace(/\[ID_ORDEN\]/g, order.id)
                 .replace(/\[DESCRIPCION\]/g, order.descripcion)
                 .replace(/\[ESTADO_PROCESO\]/g, order.estado_proceso)
-                .replace(/\[TOTAL_ORDEN\]/g, formatNumber(order.total_orden)) // Usar formato sin símbolo para más clean
+                .replace(/\[TOTAL_ORDEN\]/g, formatNumber(order.total_orden))
                 .replace(/\[ABONO\]/g, formatNumber(order.abono))
                 .replace(/\[PENDIENTE\]/g, formatNumber(totalPendiente))
                 .replace(/\[NOMBRE_EMPRESA\]/g, appData.configuracion.empresa.nombre)
@@ -1955,13 +2298,11 @@
             return subjectOrBody;
         }
 
-        // Función para enviar mensaje de WhatsApp basado en el estado actual
         function sendWhatsAppMessageByStatus(orderId) {
             const order = appData.ordenes.find(o => o.id === orderId);
             const client = appData.clientes.find(c => c.id === order.cliente_id);
             if (!order || !client || !client.telefono) { showNotification('El cliente no tiene un número de teléfono (WhatsApp) registrado.', 'error'); return; }
 
-            // Determinar el tipo de mensaje basado en el estado actual
             let messageType;
             switch(order.estado_proceso) {
                 case 'Diseño en Curso':
@@ -1995,13 +2336,11 @@
         }
         window.sendWhatsAppMessageByStatus = sendWhatsAppMessageByStatus;
 
-        // Función para enviar mensaje de correo basado en el estado actual
         function sendEmailMessageByStatus(orderId) {
             const order = appData.ordenes.find(o => o.id === orderId);
             const client = appData.clientes.find(c => c.id === order.cliente_id);
             if (!order || !client || !client.email) { showNotification('El cliente no tiene un email registrado.', 'error'); return; }
 
-            // Determinar el tipo de mensaje basado en el estado actual
             let messageType;
             switch(order.estado_proceso) {
                 case 'Diseño en Curso':
@@ -2030,7 +2369,6 @@
 
             const fullMessage = replacePlaceholders(template, order, client);
             
-            // Separar Asunto y Cuerpo (se asume que el Asunto y el Cuerpo están separados por \n\n)
             const parts = fullMessage.split('\n\n');
             let subject = 'Notificación de Pedido';
             let body = fullMessage;
@@ -2045,7 +2383,6 @@
         }
         window.sendEmailMessageByStatus = sendEmailMessageByStatus;
 
-        // Enviar correo directamente a un cliente
         function sendEmailToClient(clientId) {
             const client = appData.clientes.find(c => c.id === clientId);
             if (!client || !client.email) { showNotification('El cliente no tiene un email registrado.', 'error'); return; }
@@ -2055,52 +2392,14 @@
         }
         window.sendEmailToClient = sendEmailToClient;
 
-        // --- Lógica de Cálculo de Orden (NUEVO/MODIFICADO) ---
-        
-        function calculateOrderTotal() {
-            const productSelect = document.getElementById('order-products');
-            const deliveryCheckbox = document.getElementById('order-delivery');
-            const extraInput = document.getElementById('order-extra');
-            const estimateInput = document.getElementById('order-estimate');
-            
-            // 1. Obtener costo de delivery
-            const deliveryCost = deliveryCheckbox.checked ? (appData.configuracion.empresa.costo_delivery_fijo || 3500) : 0;
-            
-            let subtotal = 0;
-            
-            // 2. Sumar precios de productos seleccionados
-            for (let option of productSelect.options) {
-                if (option.selected && option.value) { // Asegurarse de que no sea la opción vacía
-                    const productId = parseInt(option.value);
-                    const product = appData.productos.find(p => p.id === productId);
-                    if (product && product.precio_venta) {
-                        subtotal += parseFloat(product.precio_venta);
-                    }
-                }
-            }
-
-            // 3. Sumar valor extra
-            const extraCost = parseFloat(extraInput.value) || 0;
-            
-            // 4. Calcular el total
-            const total = subtotal + deliveryCost + extraCost;
-            
-            // 5. Actualizar el campo de solo lectura (Total de Venta)
-            estimateInput.value = total.toFixed(0); 
-
-            // 6. Mostrar el costo de delivery en la etiqueta
-            document.getElementById('delivery-cost-display').textContent = formatNumber(appData.configuracion.empresa.costo_delivery_fijo || 3500);
-        }
-
-        // --- Lógica de Órdenes (Renderizado y Guardado) ---
-
+        // --- Lógica de Órdenes ---
         function populateOrderModals() {
             const clientSelect = document.getElementById('order-client');
             const productSelect = document.getElementById('order-products');
             const materialSelect = document.getElementById('order-material');
 
             clientSelect.innerHTML = '<option value="">Selecciona un cliente</option>';
-            productSelect.innerHTML = '<option value="" disabled>Selecciona productos/servicios</option>';
+            productSelect.innerHTML = '<option value="">Selecciona un producto/servicio</option>';
             materialSelect.innerHTML = '<option value="">Selecciona un material</option>';
 
             appData.clientes.forEach(client => {
@@ -2127,18 +2426,15 @@
         }
         
         function showOrderModal(id = null) {
+            selectedProducts = []; // Resetear la lista
             populateOrderModals();
             const modal = document.getElementById('order-modal');
             const title = document.getElementById('order-modal-title');
             const submitText = document.getElementById('order-submit-text');
             const form = document.getElementById('order-form');
-            const productSelect = document.getElementById('order-products');
             form.reset();
             document.getElementById('order-id').value = '';
             document.getElementById('order-extra').value = 0;
-            
-            // Limpiar selecciones múltiples
-            for(let option of productSelect.options) { option.selected = false; }
             
             const now = new Date();
             const localISOTime = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().slice(0, 16);
@@ -2153,7 +2449,6 @@
                     document.getElementById('order-client').value = order.cliente_id;
                     document.getElementById('order-description').value = order.descripcion;
                     document.getElementById('order-priority').value = order.prioridad;
-                    // El total de venta (order-estimate) se carga solo para fines de visualización y lo recalcula calculateOrderTotal
                     document.getElementById('order-estimate').value = order.total_orden; 
                     document.getElementById('order-deadline').value = order.fecha_limite;
                     document.getElementById('order-extra').value = order.valor_extra || 0;
@@ -2166,10 +2461,21 @@
                     document.getElementById('order-measures').value = order.medidas_diseno || '';
                     document.getElementById('order-diecut').checked = order.requiere_troquelado || false;
 
-                    order.productos_ids.forEach(prodId => {
-                        const option = productSelect.querySelector(`option[value="${prodId}"]`);
-                        if (option) option.selected = true;
-                    });
+                    // Cargar productos seleccionados
+                    if (order.productos_ids && order.productos_ids.length > 0) {
+                        order.productos_ids.forEach(prodId => {
+                            const product = appData.productos.find(p => p.id === prodId);
+                            if (product) {
+                                selectedProducts.push({
+                                    id: product.id,
+                                    name: product.nombre,
+                                    price: product.precio_venta,
+                                    quantity: 1 // Por defecto 1, puedes modificar para guardar cantidades
+                                });
+                            }
+                        });
+                        renderSelectedProducts();
+                    }
                 }
             } else {
                 title.textContent = 'Nueva Orden de Trabajo';
@@ -2177,9 +2483,7 @@
                 document.getElementById('order-status').value = 'Diseño en Curso'; 
             }
             
-            // Recalcular/establecer el total basado en la selección
             calculateOrderTotal();
-
             modal.classList.add('active');
         }
 
@@ -2189,7 +2493,7 @@
             const cliente_id = parseInt(document.getElementById('order-client').value);
             const descripcion = document.getElementById('order-description').value;
             const prioridad = document.getElementById('order-priority').value;
-            const total_orden = parseFloat(document.getElementById('order-estimate').value) || 0; // Usar el valor calculado
+            const total_orden = parseFloat(document.getElementById('order-estimate').value) || 0;
             const abono = parseFloat(document.getElementById('order-deposit').value) || 0;
             const fecha_limite = document.getElementById('order-deadline').value;
             const fecha_entrada_pedido = document.getElementById('order-entry-date').value;
@@ -2201,20 +2505,15 @@
             const valor_extra = parseFloat(document.getElementById('order-extra').value) || 0;
             
             // Obtener productos seleccionados y calcular costo de producción total
-            const productSelect = document.getElementById('order-products');
-            const productos_ids = [];
+            const productos_ids = selectedProducts.map(p => p.id);
             let total_produccion = 0;
 
-            for (let option of productSelect.options) {
-                if (option.selected && option.value) {
-                    const prodId = parseInt(option.value);
-                    productos_ids.push(prodId);
-                    const product = appData.productos.find(p => p.id === prodId);
-                    if (product && product.costo_produccion) {
-                        total_produccion += parseFloat(product.costo_produccion);
-                    }
+            selectedProducts.forEach(product => {
+                const prod = appData.productos.find(p => p.id === product.id);
+                if (prod && prod.costo_produccion) {
+                    total_produccion += parseFloat(prod.costo_produccion) * product.quantity;
                 }
-            }
+            });
             
             // Calcular ganancia restando el costo de delivery (que es para el repartidor)
             const deliveryCost = incluye_delivery ? (appData.configuracion.empresa.costo_delivery_fijo || 3500) : 0;
@@ -2226,7 +2525,7 @@
                 descripcion,
                 productos_ids,
                 total_orden,
-                total_produccion, // Costo de producción total
+                total_produccion,
                 ganancia,
                 abono,
                 fecha_limite,
@@ -2289,7 +2588,6 @@
 
                 const deliveryIcon = order.incluye_delivery ? '<i class="fas fa-truck" title="Incluye Delivery"></i> ' : '';
 
-                // List box para cambiar estado
                 const statusListBox = `
                     <div style="margin-top: 10px;">
                         <label for="status-${order.id}">Cambiar Estado:</label>
@@ -2301,14 +2599,12 @@
                     </div>
                 `;
 
-                // --- Lógica de Botones Condicionales ---
                 let actionButtons = '';
                 const baseButtons = [
                     `<button class="action-btn edit-btn" onclick="editOrder('${order.id}')"><i class="fas fa-edit"></i> Editar</button>`,
                     `<button class="action-btn delete-btn" onclick="deleteOrder('${order.id}')"><i class="fas fa-trash-alt"></i> Eliminar</button>`
                 ];
                 
-                // Solo un botón de WhatsApp y uno de correo que cambian según el estado
                 actionButtons += baseButtons.join('');
                 actionButtons += `<button class="action-btn whatsapp-btn" onclick="sendWhatsAppMessageByStatus('${order.id}')"><i class="fab fa-whatsapp"></i> WhatsApp</button>`;
                 actionButtons += `<button class="action-btn email-btn" onclick="sendEmailMessageByStatus('${order.id}')"><i class="fas fa-envelope"></i> Correo</button>`;
@@ -2339,7 +2635,6 @@
             });
         }
         
-        // Función para actualizar rápidamente el estado de una orden
         function quickUpdateOrderStatus(orderId, newStatus) {
             const orderIndex = appData.ordenes.findIndex(o => o.id === orderId);
             if (orderIndex !== -1) {
@@ -2351,8 +2646,7 @@
         }
         window.quickUpdateOrderStatus = quickUpdateOrderStatus;
 
-        // --- Lógica de Configuración (Mantenida) ---
-        
+        // --- Lógica de Configuración ---
         function loadSettings() {
             const config = appData.configuracion;
 
@@ -2420,13 +2714,13 @@
         });
         
         // --- Funciones de Inicialización ---
-
         function updateUI(filtered = false) {
             if (!filtered) {
                 renderOrders(appData.ordenes);
                 renderClients(appData.clientes);
                 renderProducts(appData.productos);
-                renderMaterials(appData.materiales); 
+                renderMaterials(appData.materiales);
+                renderSuppliers(appData.proveedores);
                 updateDashboard();
                 updateReports();
             }
@@ -2434,7 +2728,6 @@
         }
 
         function loadSavedConfig() {
-            // Cargar token de GitHub guardado localmente
             const savedToken = localStorage.getItem('githubToken');
             if (savedToken) {
                 githubToken = savedToken;
@@ -2459,7 +2752,6 @@
         }
         
         function updateDashboard() {
-            // Calcular métricas
             const totalOrders = appData.ordenes.length;
             const pendingOrders = appData.ordenes.filter(o => o.estado_proceso !== 'Entregado' && o.estado_proceso !== 'Cancelado').length;
             const totalClients = appData.clientes.length;
@@ -2469,13 +2761,11 @@
                 totalProfit += o.ganancia;
             });
 
-            // Actualizar el DOM
             document.getElementById('total-orders').textContent = totalOrders;
             document.getElementById('pending-orders').textContent = pendingOrders;
             document.getElementById('total-profit').textContent = formatCurrency(totalProfit);
             document.getElementById('total-clients').textContent = totalClients;
 
-            // Renderizar órdenes recientes (Top 5)
             const recentOrders = appData.ordenes.slice().sort((a, b) => new Date(b.fecha_entrada_pedido) - new Date(a.fecha_entrada_pedido)).slice(0, 5);
             const recentOrdersContainer = document.getElementById('recent-orders');
             if (recentOrders.length > 0) {
@@ -2495,6 +2785,7 @@
         function updateReports() {
             let totalIncome = 0;
             let totalProductionCost = 0;
+            let totalDeliveryCost = 0;
             let totalDeposit = 0;
 
             appData.ordenes.forEach(o => {
@@ -2502,15 +2793,18 @@
                     totalIncome += o.total_orden;
                     totalProductionCost += o.total_produccion;
                     totalDeposit += o.abono;
+                    if (o.incluye_delivery) {
+                        totalDeliveryCost += (appData.configuracion.empresa.costo_delivery_fijo || 3500);
+                    }
                 }
             });
 
-            const netProfit = totalIncome - totalProductionCost;
+            const netProfit = totalIncome - totalProductionCost - totalDeliveryCost;
 
             document.getElementById('total-income').textContent = formatCurrency(totalIncome);
             document.getElementById('total-production-cost').textContent = formatCurrency(totalProductionCost);
+            document.getElementById('total-delivery-cost').textContent = formatCurrency(totalDeliveryCost);
             document.getElementById('net-profit').textContent = formatCurrency(netProfit);
-            document.getElementById('total-deposit').textContent = formatCurrency(totalDeposit);
 
             const summary = document.getElementById('financial-summary');
             summary.innerHTML = `
@@ -2525,14 +2819,14 @@
                     <tbody>
                         <tr><td>Ingresos Totales (Venta)</td><td>${formatCurrency(totalIncome)}</td><td>Venta total de órdenes no canceladas.</td></tr>
                         <tr><td>Costo de Producción (Materia Prima)</td><td>${formatCurrency(totalProductionCost)}</td><td>Costo total de productos en órdenes no canceladas.</td></tr>
-                        <tr><td style="font-weight: bold;">Ganancia Neta</td><td style="font-weight: bold; color: ${netProfit > 0 ? 'var(--whatsapp-color)' : 'var(--danger-color)'};">${formatCurrency(netProfit)}</td><td>Ganancia total antes de gastos operacionales.</td></tr>
+                        <tr><td>Gastos de Delivery</td><td>${formatCurrency(totalDeliveryCost)}</td><td>Total gastado en delivery.</td></tr>
+                        <tr style="background-color: #f8f9fa;"><td style="font-weight: bold;">Ganancia Neta</td><td style="font-weight: bold; color: ${netProfit > 0 ? 'var(--whatsapp-color)' : 'var(--danger-color)'};">${formatCurrency(netProfit)}</td><td>Ingresos - Producción - Delivery</td></tr>
                         <tr><td>Capital Recaudado (Abonos)</td><td>${formatCurrency(totalDeposit)}</td><td>Monto total de anticipos recibidos.</td></tr>
                     </tbody>
                 </table>
             `;
         }
 
-        // Búsqueda en productos del modal de órdenes
         function setupProductSearch() {
             const searchInput = document.getElementById('product-search-input');
             const productSelect = document.getElementById('order-products');
@@ -2540,7 +2834,6 @@
             searchInput.addEventListener('input', function() {
                 const searchTerm = this.value.toLowerCase();
                 
-                // Mostrar/ocultar opciones según el término de búsqueda
                 for (let option of productSelect.options) {
                     if (option.value && option.text) {
                         const text = option.text.toLowerCase();
@@ -2568,16 +2861,17 @@
                     if (tabId === 'clients') { renderClients(appData.clientes); } 
                     if (tabId === 'products') { renderProducts(appData.productos); }
                     if (tabId === 'materials') { renderMaterials(appData.materiales); } 
+                    if (tabId === 'suppliers') { renderSuppliers(appData.proveedores); }
                     if (tabId === 'reports') { updateReports(); } 
                     if (tabId === 'settings') { loadSettings(); }
                 });
             });
             
-            // --- EVENTOS DE CÁLCULO DE ORDENES (NUEVO) ---
+            // Eventos de cálculo de órdenes
             document.getElementById('order-products').addEventListener('change', calculateOrderTotal);
             document.getElementById('order-delivery').addEventListener('change', calculateOrderTotal);
             document.getElementById('order-extra').addEventListener('input', calculateOrderTotal);
-            document.getElementById('default-delivery-cost').addEventListener('change', calculateOrderTotal); // Recalcular si cambia el costo base en config
+            document.getElementById('default-delivery-cost').addEventListener('change', calculateOrderTotal);
 
             // Configurar búsqueda de productos
             setupProductSearch();
@@ -2587,6 +2881,16 @@
             document.getElementById('refresh-materials').addEventListener('click', () => renderMaterials(appData.materiales));
             document.getElementById('material-form').addEventListener('submit', saveMaterial);
             document.getElementById('cancel-material').addEventListener('click', hideMaterialModal);
+
+            // Configurar eventos de Proveedores
+            document.getElementById('new-supplier-btn').addEventListener('click', () => showSupplierModal());
+            document.getElementById('refresh-suppliers').addEventListener('click', () => renderSuppliers(appData.proveedores));
+            document.getElementById('supplier-search').addEventListener('input', () => { 
+                const term = document.getElementById('supplier-search').value.toLowerCase();
+                renderSuppliers(appData.proveedores.filter(s => s.empresa.toLowerCase().includes(term) || s.contacto.toLowerCase().includes(term)));
+            });
+            document.getElementById('supplier-form').addEventListener('submit', saveSupplier);
+            document.getElementById('cancel-supplier').addEventListener('click', hideSupplierModal);
 
             // Configurar eventos de GitHub
             document.getElementById('github-token').addEventListener('input', function() {
@@ -2641,6 +2945,9 @@
                 openGoogleMaps(address);
             });
 
+            // Configurar el botón de agregar producto
+            document.getElementById('add-product-btn').addEventListener('click', addProductToOrder);
+
             // Configurar formularios
             document.getElementById('order-form').addEventListener('submit', saveOrder);
             document.getElementById('client-form').addEventListener('submit', saveClient);
@@ -2658,6 +2965,7 @@
         window.showClientModal = showClientModal;
         window.showProductModal = showProductModal;
         window.hideMaterialModal = function() { document.getElementById('material-modal').classList.remove('active'); };
+        window.hideSupplierModal = function() { document.getElementById('supplier-modal').classList.remove('active'); };
         
         window.editOrder = function(id) { showOrderModal(id); };
         window.deleteOrder = function(id) { if (confirm('¿Estás seguro de que quieres eliminar esta orden?')) { appData.ordenes = appData.ordenes.filter(o => o.id !== id); autoSaveToGitHub(); updateUI(); showNotification('Orden eliminada correctamente', 'success'); } };
