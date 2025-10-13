@@ -1717,6 +1717,31 @@
         </div>
     </div>
 </div>
+    <!-- SCRIPT para descargar etiqueta como imagen -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+    document.getElementById('download-label-btn').addEventListener('click', function() {
+        const labelContent = document.getElementById('shipping-label-content');
+        if (!labelContent) {
+            alert("No hay etiqueta para descargar.");
+            return;
+        }
+
+        html2canvas(labelContent, {
+            scale: 3, // mejor calidad
+            useCORS: true,
+            backgroundColor: '#fff'
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = 'etiqueta_envio.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            console.error('Error al generar la imagen:', err);
+            alert("Hubo un problema al generar la etiqueta.");
+        });
+    });
+    </script>
 
     <script>
         // Variables globales
@@ -1950,12 +1975,17 @@
                 height: 100
             });
 
-            const telUrl = `tel:${client.telefono || ''}`;
+            const telefono = (client.telefono || '').replace(/\D/g, ''); // Limpia el número, deja solo dígitos
+            const telUrl = `tel:+${telefono}`; // Usa formato internacional
             new QRCode(document.getElementById('qrcode-call'), {
                 text: telUrl,
-                width: 100,
-                height: 100
+                width: 160,
+                height: 160,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.L
             });
+
 
             const whatsappUrl = `https://api.whatsapp.com/send?phone=${client.telefono || ''}`;
             new QRCode(document.getElementById('qrcode-whatsapp'), {
